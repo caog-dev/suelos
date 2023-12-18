@@ -3,6 +3,7 @@
 import { LineChart } from "@/components/charts/line";
 import { TableComponent } from "@/components/table";
 import { Table2Component } from "@/components/table/table2";
+import { TypeOfMaterial } from "@/components/typeOfMaterial";
 import {
   IItemData,
   calculateGranulometry,
@@ -156,8 +157,7 @@ export default function Home() {
             />
           </div>
           <div className="flex flex-col justify-center">
-            <p className="text-2xl text-center">El material es:</p>
-            <p className="text-lg text-[#C4940B] text-center">xxxxxxxx</p>
+            <TypeOfMaterial />
             <br />
             <Table2Component
               D60={D60}
