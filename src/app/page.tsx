@@ -1,7 +1,8 @@
 "use client";
 
 import { LineChart } from "@/components/charts/line";
-import { TabelComponent } from "@/components/table";
+import { TableComponent } from "@/components/table";
+import { Table2Component } from "@/components/table/table2";
 import {
   IItemData,
   calculateGranulometry,
@@ -28,6 +29,14 @@ export default function Home() {
   const [difference, setDifference] = useState(0);
   const [totalSample, setTotalSample] = useState(0);
   const [dry, setDry] = useState(0);
+  const [D60, setD60] = useState(0);
+  const [D30, setD30] = useState(0);
+  const [D10, setD10] = useState(0);
+  const [CU, setCU] = useState(0);
+  const [CC, setCC] = useState(0);
+  const [N4, setN4] = useState(0);
+  const [N4RetN200, setN4RetN200] = useState(0);
+  const [passN200, setPassN200] = useState(0);
 
   const handleChangeData = (data: IItemData[]) => {
     const res = calculateGranulometry(data, totalSample, dry);
@@ -53,18 +62,59 @@ export default function Home() {
     setGranulometry(res.data);
   };
 
+  const handleChangeD60 = (value: number) => {
+    window.localStorage.setItem("D60", value.toString());
+    setD60(value);
+  };
+
+  const handleChangeD30 = (value: number) => {
+    window.localStorage.setItem("D30", value.toString());
+    setD30(value);
+  };
+
+  const handleChangeD10 = (value: number) => {
+    window.localStorage.setItem("D10", value.toString());
+    setD10(value);
+  };
+
   useEffect(() => {
     let data: any = window.localStorage.getItem("DATA");
     let ts: any = window.localStorage.getItem("TOTAL_SAMPLE");
     let d: any = window.localStorage.getItem("DRY");
     let total: any = window.localStorage.getItem("TOTAL");
     let difference: any = window.localStorage.getItem("DIFFERENCE");
+    let D60: any = window.localStorage.getItem("D60");
+    let D30: any = window.localStorage.getItem("D30");
+    let D10: any = window.localStorage.getItem("D10");
+
     if (data) setGranulometry(JSON.parse(data) as IItemData[]);
     if (ts) setTotalSample(parseFloat(ts));
     if (d) setDry(parseFloat(d));
     if (total) setTotal(parseFloat(total));
     if (difference) setDifference(parseFloat(difference));
+    if (D60) setD60(parseFloat(D60));
+    if (D30) setD30(parseFloat(D30));
+    if (D10) setD10(parseFloat(D10));
   }, []);
+
+  useEffect(() => {
+    setCU(D10 > 0 ? D60 / D10 : 0);
+    setCC(D10 * D60 > 0 ? (D30 * D30) / (D10 * D60) : 0);
+  }, [D60, D30, D10]);
+
+  useEffect(() => {
+    let N4 = {} as IItemData;
+    let N200 = {} as IItemData;
+
+    granulometry.forEach((g) => {
+      if (g.label === "N4") N4 = g as IItemData;
+      if (g.label === "N200") N200 = g as IItemData;
+    });
+
+    setN4(N4.acumulatedRetained || 0);
+    setPassN200(N200.pass || 0);
+    setN4RetN200(100 - (N4.acumulatedRetained || 0) - (N200.pass || 0));
+  }, [granulometry]);
 
   return (
     <main className="min-h-screen px-10 pt-10">
@@ -94,7 +144,7 @@ export default function Home() {
       <div className="w-full">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
           <div className="lg:col-span-3">
-            <TabelComponent
+            <TableComponent
               data={granulometry}
               onChangeData={handleChangeData}
               total={total}
@@ -106,8 +156,22 @@ export default function Home() {
             />
           </div>
           <div className="flex flex-col justify-center">
-            <p className="text-2xl">El material es:</p>
-            <p className="text-lg text-[#C4940B]">xxxxxxxx</p>
+            <p className="text-2xl text-center">El material es:</p>
+            <p className="text-lg text-[#C4940B] text-center">xxxxxxxx</p>
+            <br />
+            <Table2Component
+              D60={D60}
+              onChangeD60={handleChangeD60}
+              D30={D30}
+              onChangeD30={handleChangeD30}
+              D10={D10}
+              onChangeD10={handleChangeD10}
+              CU={CU}
+              CC={CC}
+              N4={N4}
+              N4RetN200={N4RetN200}
+              passN200={passN200}
+            />
           </div>
         </div>
         <div>

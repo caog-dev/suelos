@@ -13,7 +13,7 @@ interface TableProps {
   onChangeDry?: (value: number) => void;
 }
 
-export const TabelComponent = ({
+export const TableComponent = ({
   data = [],
   onChangeData,
   total,
