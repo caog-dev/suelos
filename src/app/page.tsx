@@ -195,7 +195,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="my-10 text-center">By John Montenegro</div>
+      <div className="my-10 text-center">By Cookie</div>
     </main>
   );
 }
